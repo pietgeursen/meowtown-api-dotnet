@@ -88,18 +88,19 @@ namespace meowtown_api.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPost]
-        public async Task<ActionResult<Cat>> PostCat(Cat cat)
+        public async Task<ActionResult<Cat>> PostCat(CatInputModel cat)
         {
           if(!ModelState.IsValid){
             return BadRequest();
           }
-          if(await TryUpdateModelAsync<ICatInputModel>(cat)){
-            cat.Lives = 9;
-            _context.Cats.Add(cat);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetCat", new { id = cat.Id }, cat);
-          }
-          return BadRequest();
+
+          var _cat = new Cat(){
+            Lives = 9,
+            Name = cat.Name
+          };
+          _context.Cats.Add(_cat);
+          await _context.SaveChangesAsync();
+          return CreatedAtAction("GetCat", new { id = _cat.Id }, _cat);
         }
 
         // DELETE: api/Cats/5
